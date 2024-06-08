@@ -1,0 +1,6 @@
+/clip_scene_rec:
+  ros__parameters:
+    callback_period_sec: 5.0
+    scene_labels: ['indoor', 'outdoor', 'transportation']
+    scene_descriptions: ['inside a building', 'outdoors', 'inside a vehicle']
+    clip_model: 'ViT-B/32'

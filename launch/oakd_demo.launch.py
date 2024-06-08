@@ -20,6 +20,11 @@ def generate_launch_description():
         'config',
         'oakd_cam.yaml'
     )
+    clip_config = os.path.join(
+        get_package_share_directory('mm_scene_rec'),
+        'config',
+        'clip_params.yaml'
+    )
 
     # Static TF node
     tf_node = Node(package = "tf2_ros", 
@@ -44,7 +49,9 @@ def generate_launch_description():
     # Scene recognition nodes
     clip_rec_node = Node(package = "mm_scene_rec", 
                     executable = "clip_scene_rec.py",
-                    remappings=[('/clip_scene_image','/oak/rgb/image_raw')]
+                    name = "clip_scene_rec",
+                    remappings=[('/clip_scene_image','/oak/rgb/image_raw')],
+                    parameters=[clip_config]
     )
     ld.add_action(clip_rec_node)
 

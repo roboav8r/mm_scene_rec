@@ -20,10 +20,14 @@ class ClipSceneRecNode(Node):
 
         super().__init__('clip_scene_rec')
 
-        # TODO - convert these to ROS parameters, declare and import
-        self.callback_period = 3
-        self.scene_labels = ['indoor', 'outdoor', 'transportation']
-        self.scene_descriptions = ['inside a building', 'outdoors', 'inside a vehicle']
+        self.declare_parameter('callback_period_sec', rclpy.Parameter.Type.DOUBLE)
+        self.declare_parameter('scene_labels', rclpy.Parameter.Type.STRING_ARRAY)
+        self.declare_parameter('scene_descriptions', rclpy.Parameter.Type.STRING_ARRAY)
+        self.declare_parameter('clip_model', rclpy.Parameter.Type.STRING)
+        self.callback_period_sec = self.get_parameter('callback_period_sec').get_parameter_value().double_value
+        self.scene_labels = self.get_parameter('scene_labels').get_parameter_value().string_array_value
+        self.scene_descriptions = self.get_parameter('scene_descriptions').get_parameter_value().string_array_value
+        self.clip_model = self.get_parameter('clip_model').get_parameter_value().string_value
 
         self.image_sub = self.create_subscription(Image, 'clip_scene_image', self.image_callback, 10)
         self.scene_pub = self.create_publisher(String, 'clip_scene', 10)
@@ -36,7 +40,7 @@ class ClipSceneRecNode(Node):
         self.bridge = CvBridge()
 
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.model, self.preprocess = clip.load("ViT-B/32", device=self.device)
+        self.model, self.preprocess = clip.load(self.clip_model, device=self.device)
 
         self.text_tokens = clip.tokenize(self.scene_descriptions).to(self.device)
         self.text_features = self.model.encode_text(self.text_tokens)
