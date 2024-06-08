@@ -15,6 +15,7 @@ install(DIRECTORY config DESTINATION share/${PROJECT_NAME}/)
 # ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
   scripts/clip_scene_rec.py
+  scripts/bayes_scene_est.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

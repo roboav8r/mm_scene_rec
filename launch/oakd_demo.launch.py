@@ -56,6 +56,13 @@ def generate_launch_description():
     ld.add_action(clip_rec_node)
 
     # Fusion node
+    scene_rec_node = Node(package = "mm_scene_rec", 
+                    executable = "bayes_scene_est.py",
+                    name = "bayes_scene_est",
+                    # remappings=[('/clip_scene_image','/oak/rgb/image_raw')],
+                    # parameters=[clip_config]
+    )
+    ld.add_action(scene_rec_node)
 
     # Foxglove bridge for visualization
     viz_node = IncludeLaunchDescription(

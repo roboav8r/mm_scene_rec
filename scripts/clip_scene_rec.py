@@ -2,7 +2,6 @@
 
 import torch
 import clip
-import cv2
 from PIL import Image as PILImage
 
 import rclpy
@@ -32,7 +31,7 @@ class ClipSceneRecNode(Node):
         self.image_sub = self.create_subscription(Image, 'clip_scene_image', self.image_callback, 10)
         self.scene_pub = self.create_publisher(String, 'clip_scene', 10)
         self.scene_category_pub = self.create_publisher(CategoricalDistribution, 'clip_scene_category', 10)
-        self.timer = self.create_timer(10, self.timer_callback)
+        self.timer = self.create_timer(self.callback_period_sec, self.timer_callback)
 
         self.image_msg = Image()
         self.image_received = False
