@@ -9,5 +9,6 @@
 
     clip:
       obs_labels: ['indoor', 'outdoor', 'transportation']
+      sensor_model_coeffs: [.7, .1, .2, .1, .8, .1, .25, .25, .5]
       topic: 'clip_scene_category'
 
