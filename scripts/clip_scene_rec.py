@@ -3,6 +3,7 @@
 import torch
 import clip
 from PIL import Image as PILImage
+import time
 
 import rclpy
 from rclpy.node import Node
@@ -51,6 +52,7 @@ class ClipSceneRecNode(Node):
 
 
     def timer_callback(self):
+        start_time = time.time()
 
         if self.image_received:
 
@@ -76,6 +78,8 @@ class ClipSceneRecNode(Node):
                 scene_category_msg.categories = self.scene_labels
                 scene_category_msg.probabilities = probs[0].tolist()
                 self.scene_category_pub.publish(scene_category_msg)
+
+                self.get_logger().debug("Inference time (s): %s" % (time.time() - start_time))
 
 def main(args=None):
     rclpy.init(args=args)
