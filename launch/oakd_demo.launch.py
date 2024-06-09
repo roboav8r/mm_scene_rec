@@ -25,6 +25,11 @@ def generate_launch_description():
         'config',
         'clip_params.yaml'
     )
+    bayes_est_config = os.path.join(
+        get_package_share_directory('mm_scene_rec'),
+        'config',
+        'bayes_estimator_params.yaml'
+    )
 
     # Static TF node
     tf_node = Node(package = "tf2_ros", 
@@ -60,7 +65,7 @@ def generate_launch_description():
                     executable = "bayes_scene_est.py",
                     name = "bayes_scene_est",
                     # remappings=[('/clip_scene_image','/oak/rgb/image_raw')],
-                    # parameters=[clip_config]
+                    parameters=[bayes_est_config]
     )
     ld.add_action(scene_rec_node)
 

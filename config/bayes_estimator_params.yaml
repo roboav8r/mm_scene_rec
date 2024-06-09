@@ -1,0 +1,13 @@
+/bayes_scene_est:
+  ros__parameters:
+    
+    callback_period_sec: 1.0
+    scene_labels: ['indoor', 'outdoor', 'transportation']
+    scene_prior: [.35,.35,.3]
+
+    sensor_names: ['clip']
+
+    clip:
+      obs_labels: ['indoor', 'outdoor', 'transportation']
+      topic: 'clip_scene_category'
+
