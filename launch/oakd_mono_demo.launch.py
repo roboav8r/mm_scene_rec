@@ -20,16 +20,22 @@ def generate_launch_description():
         'config',
         'oakd_cam.yaml'
     )
+    mic_config = os.path.join(
+        get_package_share_directory('ros_audition'),
+        'config',
+        'usb_config.yaml'
+    )
     clip_config = os.path.join(
         get_package_share_directory('mm_scene_rec'),
         'config',
         'clip_params.yaml'
     )
-    audio_config = os.path.join(
-        get_package_share_directory('ros_audition'),
+    audio_scene_rec_config = os.path.join(
+        get_package_share_directory('mm_scene_rec'),
         'config',
-        'usb_config.yaml'
+        'audio_scene_rec_params.yaml'
     )
+
     bayes_est_config = os.path.join(
         get_package_share_directory('mm_scene_rec'),
         'config',
@@ -61,7 +67,7 @@ def generate_launch_description():
         executable='audio_acq_node.py',
         name='audio_acq_node',
         output='screen',
-        parameters=[audio_config]
+        parameters=[mic_config]
     )
     ld.add_action(acq_node)
 
@@ -73,12 +79,21 @@ def generate_launch_description():
                     parameters=[clip_config]
     )
     ld.add_action(clip_rec_node)
+    
+    audio_rec_node = Node(
+        package='mm_scene_rec',
+        executable='audio_scene_rec.py',
+        name='audio_scene_rec',
+        output='screen',
+        parameters=[audio_scene_rec_config]
+    )
+    ld.add_action(audio_rec_node)
+
 
     # Fusion node
     scene_rec_node = Node(package = "mm_scene_rec", 
                     executable = "bayes_scene_est.py",
                     name = "bayes_scene_est",
-                    # remappings=[('/clip_scene_image','/oak/rgb/image_raw')],
                     parameters=[bayes_est_config]
     )
     ld.add_action(scene_rec_node)

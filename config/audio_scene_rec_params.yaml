@@ -1,0 +1,14 @@
+scene_rec_node:
+  ros__parameters:
+    n_channels: 7
+    # src: 'plughw:4,0'
+    sample_rate: 48000
+    downsample_rate: 22050
+    frame_size: 480000
+    scene_size: 220500
+    scene_index: [0, 0]
+    labels: ['indoor','outdoor','transportation']
+    scene_est_interval: 1.0
+    model_path: 'pretrained_models/sub2/'
+    mean_path: 'config/tr_mean_676d70_f1_apd18_stereo_obj.pt'
+    std_path: 'config/tr_std_676d70_f1_apd18_stereo_obj.pt'
