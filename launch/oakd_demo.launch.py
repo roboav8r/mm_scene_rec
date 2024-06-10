@@ -25,6 +25,11 @@ def generate_launch_description():
         'config',
         'clip_params.yaml'
     )
+    audio_config = os.path.join(
+        get_package_share_directory('ros_audition'),
+        'config',
+        'usb_config.yaml'
+    )
     bayes_est_config = os.path.join(
         get_package_share_directory('mm_scene_rec'),
         'config',
@@ -38,7 +43,7 @@ def generate_launch_description():
     )
     ld.add_action(tf_node)
 
-    # Sensor node
+    # Sensor nodes
     cam_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
@@ -50,6 +55,15 @@ def generate_launch_description():
         launch_arguments={'params_file': cam_config }.items()
     )
     ld.add_action(cam_node)
+
+    acq_node = Node(
+        package='ros_audition',
+        executable='audio_acq_node.py',
+        name='audio_acq_node',
+        output='screen',
+        parameters=[audio_config]
+    )
+    ld.add_action(acq_node)
 
     # Scene recognition nodes
     clip_rec_node = Node(package = "mm_scene_rec", 
