@@ -1,14 +1,36 @@
-scene_rec_node:
+audio_scene_rec:
   ros__parameters:
-    n_channels: 7
+    n_channels: 1
     # src: 'plughw:4,0'
-    sample_rate: 48000
-    downsample_rate: 22050
-    frame_size: 480000
-    scene_size: 220500
-    scene_index: [0, 0]
-    labels: ['indoor','outdoor','transportation']
+    sample_rate: 32000
+    downsample_rate: 32000
+    frame_size: 32000
+    scene_size: 32000
+    scene_index: [0]
+    labels: ['airport', 'bus', 'metro', 'metro_station', 'park', 'public_square', 'shopping_mall', 'street_pedestrian', 'street_traffic', 'tram']
     scene_est_interval: 1.0
-    model_path: 'pretrained_models/sub2/'
-    mean_path: 'config/tr_mean_676d70_f1_apd18_stereo_obj.pt'
-    std_path: 'config/tr_std_676d70_f1_apd18_stereo_obj.pt'
+    wandb_id: 'fjycgepm'
+
+    # Model path params
+    project_name: DCASE23_Task1
+    wandb_id: 'c0a7nzin'
+
+    # Mel pre-processing parameters
+    resample_rate: 32000
+    window_size: 3072
+    hop_size: 500
+    n_fft: 4096
+    n_mels: 256
+    freqm: 48
+    timem: 0
+    fmin: 0
+    fmax: 0
+    fmin_aug_range: 1
+    fmax_aug_range: 1000
+
+    # Model parameters
+    n_classes: 10
+    in_channels: 1
+    base_channels: 32
+    channels_multiplier: 2.3
+    expansion_rate: 3
