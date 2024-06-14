@@ -1,0 +1,4 @@
+[submodule "mm_scene_rec/cpjku_dcase23"]
+	path = mm_scene_rec/cpjku_dcase23
+	url = https://github.com/roboav8r/cpjku_dcase23.git
+	branch = ros2-devel

@@ -7,14 +7,18 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclpy REQUIRED)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 install(DIRECTORY config DESTINATION share/${PROJECT_NAME}/)
 
 # Install Python
-# ament_python_install_package(${PROJECT_NAME})
+ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
   scripts/clip_scene_rec.py
+  scripts/audio_scene_rec.py
   scripts/bayes_scene_est.py
   DESTINATION lib/${PROJECT_NAME}
 )
