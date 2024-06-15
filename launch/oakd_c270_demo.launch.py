@@ -23,7 +23,7 @@ def generate_launch_description():
     mic_config = os.path.join(
         get_package_share_directory('ros_audition'),
         'config',
-        'usb_config.yaml'
+        'c270_config.yaml'
     )
     clip_config = os.path.join(
         get_package_share_directory('mm_scene_rec'),

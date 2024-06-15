@@ -1,14 +1,23 @@
-/bayes_scene_est:
+/bayes_scene_category_est:
   ros__parameters:
-    
     callback_period_sec: 1.0
-    scene_labels: ['indoor', 'outdoor', 'transportation']
-    scene_prior: [.35,.35,.3]
+    scene_labels: ['home', 'back_yard', 'neighborhood','park']
+    scene_prior: [.25,.25,.25,.25]
 
-    sensor_names: ['clip']
+    sensor_names: ['clip','dcase23']
 
     clip:
-      obs_labels: ['indoor', 'outdoor', 'transportation']
-      sensor_model_coeffs: [.7, .1, .2, .1, .8, .1, .25, .25, .5]
+      obs_labels: ['home', 'back_yard', 'neighborhood', 'park','lab','classroom','campus','store','city_street']
+      sensor_model_coeffs: [286, 0, 0, 0, 28, 2, 0, 4, 0,
+                            1, 317, 0, 2, 0, 0, 0, 0, 0,
+                            0, 45, 258, 11, 0, 0, 3, 0, 3,
+                            1, 39, 17, 230, 0, 0, 33, 0, 0]
       topic: 'clip_scene_category'
 
+    dcase23:
+      obs_labels: ['airport', 'bus', 'metro', 'metro_station','park','public_square','shopping_mall','street_pedestrian','street_traffic','tram']
+      sensor_model_coeffs: [33, 31, 17, 82, 107, 1, 0, 1, 1, 47,
+                            1, 38, 8, 16, 251, 1, 1, 1, 0, 3,
+                            2, 17, 8, 8, 271, 4, 1, 0, 6, 3,
+                            0, 12, 1, 0, 294, 0, 0, 0, 10, 3]
+      topic: 'audio_scene_category'
