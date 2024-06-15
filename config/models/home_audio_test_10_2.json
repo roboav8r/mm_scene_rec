@@ -1,0 +1,27 @@
+{
+    "true_scene": "home_test",
+    "observed_scenes": [
+        "airport",
+        "bus",
+        "metro",
+        "metro_station",
+        "park",
+        "public_square",
+        "shopping_mall",
+        "street_pedestrian",
+        "street_traffic",
+        "tram"
+    ],
+    "observed_counts": [
+        0,
+        2,
+        0,
+        0,
+        0,
+        1,
+        6,
+        0,
+        0,
+        1
+    ]
+}
