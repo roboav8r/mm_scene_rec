@@ -12,12 +12,13 @@ ros2 bag record -o <filename> -s mcap /image_raw /audio_info /audio_data
 ```
 ros2 launch mm_scene_rec scene_rec.launch.py # window 1
 cd mm_scene_rec
-python3 scripts/est_scene_model.py 10 'home_audio_test_10' 'home_test' 'audio_scene_category'
-ros2 bag play <filename>
+python3 scripts/est_scene_model.py 10 'home_audio_test_10' 'home_test' 'audio_scene_category' # window 2
+python3 scripts/est_scene_model.py 10 'home_clip_test_10' 'home_test' 'clip_scene_category' # window 3
+ros2 bag play <filename> # window 4
 # kill the scene rec nodes
 ```
 
-python3 scripts/est_scene_model.py 10 'home_clip_test_10' 'home_test' 'clip_scene_category'
+
 ros2 bag play -p <filename>
 ```
 
