@@ -1,0 +1,27 @@
+{
+    "true_scene": "park_day_audio",
+    "observed_scenes": [
+        "airport",
+        "bus",
+        "metro",
+        "metro_station",
+        "park",
+        "public_square",
+        "shopping_mall",
+        "street_pedestrian",
+        "street_traffic",
+        "tram"
+    ],
+    "observed_counts": [
+        1,
+        8,
+        0,
+        0,
+        83,
+        1,
+        0,
+        0,
+        5,
+        2
+    ]
+}

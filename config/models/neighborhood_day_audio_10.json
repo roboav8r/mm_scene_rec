@@ -1,5 +1,5 @@
 {
-    "true_scene": "home_music",
+    "true_scene": "neighborhood_day_audio",
     "observed_scenes": [
         "airport",
         "bus",
@@ -14,14 +14,14 @@
     ],
     "observed_counts": [
         0,
-        7,
-        2,
+        1,
+        0,
+        0,
+        9,
         0,
         0,
         0,
         0,
-        0,
-        0,
-        1
+        0
     ]
 }

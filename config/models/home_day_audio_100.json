@@ -1,0 +1,27 @@
+{
+    "true_scene": "home_day_audio",
+    "observed_scenes": [
+        "airport",
+        "bus",
+        "metro",
+        "metro_station",
+        "park",
+        "public_square",
+        "shopping_mall",
+        "street_pedestrian",
+        "street_traffic",
+        "tram"
+    ],
+    "observed_counts": [
+        27,
+        3,
+        3,
+        26,
+        33,
+        0,
+        0,
+        0,
+        0,
+        8
+    ]
+}

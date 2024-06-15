@@ -1,6 +1,6 @@
 /clip_scene_rec:
   ros__parameters:
     callback_period_sec: 1.0
-    scene_labels: ['indoor', 'outdoor', 'transportation']
-    scene_descriptions: ['inside a building', 'outdoors', 'inside a vehicle']
+    scene_labels: ['home', 'back_yard', 'neighborhood', 'park', 'lab','classroom','campus','store','city_street']
+    scene_descriptions: ['inside a home', 'a back yard', 'a neighborhood', 'a park','a laboratory','a classroom','a campus','a store','a city street']
     clip_model: 'ViT-B/32'

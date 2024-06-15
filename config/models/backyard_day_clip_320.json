@@ -1,0 +1,25 @@
+{
+    "true_scene": "backyard_day_clip",
+    "observed_scenes": [
+        "home",
+        "back_yard",
+        "neighborhood",
+        "park",
+        "lab",
+        "classroom",
+        "campus",
+        "store",
+        "city_sreet"
+    ],
+    "observed_counts": [
+        1,
+        317,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0
+    ]
+}

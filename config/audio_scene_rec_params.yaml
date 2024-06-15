@@ -1,6 +1,6 @@
 audio_scene_rec:
   ros__parameters:
-    n_channels: 1
+    n_channels: 2
     # src: 'plughw:4,0'
     sample_rate: 32000
     downsample_rate: 32000
