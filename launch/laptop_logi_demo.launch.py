@@ -15,11 +15,11 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     # Config files
-    # cam_config = os.path.join(
-    #     get_package_share_directory('mm_scene_rec'),
-    #     'config',
-    #     'usb_cam.yaml'
-    # )
+    cam_config = os.path.join(
+        get_package_share_directory('mm_scene_rec'),
+        'config',
+        'c920_cam.yaml'
+    )
     mic_config = os.path.join(
         get_package_share_directory('ros_audition'),
         'config',
@@ -50,7 +50,7 @@ def generate_launch_description():
         executable='usb_cam_node_exe',
         name='usb_cam_node',
         output='screen',
-        # parameters=[cam_config]
+        parameters=[cam_config]
     )
     ld.add_action(cam_node)
 
