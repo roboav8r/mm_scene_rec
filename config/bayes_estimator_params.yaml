@@ -4,15 +4,15 @@
     scene_labels: ['home', 'back_yard', 'neighborhood','park']
     scene_prior: [.25,.25,.25,.25]
 
-    sensor_names: ['dcase23']
+    sensor_names: ['clip','dcase23']
 
-    # clip:
-    #   obs_labels: ['home', 'back_yard', 'neighborhood', 'park','lab','classroom','campus','store','city_street']
-    #   sensor_model_coeffs: [286, 0, 0, 0, 28, 2, 0, 4, 0,
-    #                         1, 317, 0, 2, 0, 0, 0, 0, 0,
-    #                         0, 45, 258, 11, 0, 0, 3, 0, 3,
-    #                         1, 39, 17, 230, 0, 0, 33, 0, 0]
-    #   topic: 'clip_scene_category'
+    clip:
+      obs_labels: ['home', 'back_yard', 'neighborhood', 'park','lab','classroom','campus','store','city_street']
+      sensor_model_coeffs: [287., 1., 1., 1., 29., 3., 1., 5., 1.,
+                            2., 318., 1., 3., 1., 1., 1., 1., 1.,
+                            1., 46., 259., 12., 1., 1., 4., 1., 4.,
+                            2., 40., 18., 231., 1., 1., 34., 1., 1.]
+      topic: 'clip_scene_category'
 
     dcase23:
       obs_labels: ['airport', 'bus', 'metro', 'metro_station','park','public_square','shopping_mall','street_pedestrian','street_traffic','tram']
