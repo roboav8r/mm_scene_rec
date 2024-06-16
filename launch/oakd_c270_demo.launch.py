@@ -93,7 +93,8 @@ def generate_launch_description():
     # Fusion node
     scene_rec_node = Node(package = "mm_scene_rec", 
                     executable = "bayes_scene_est.py",
-                    name = "bayes_scene_est",
+                    name = "bayes_scene_category_est",
+                    output = 'screen',
                     parameters=[bayes_est_config]
     )
     ld.add_action(scene_rec_node)

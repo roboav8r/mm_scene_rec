@@ -69,8 +69,10 @@ class BayesSceneEstNode(Node):
             self.sensor_params[sensor_name]['symbol'] = gtsam.symbol('o',sensor_idx)
             self.sensor_params[sensor_name]['obs_labels'] = self.get_parameter('%s.obs_labels' % sensor_name).get_parameter_value().string_array_value
             self.sensor_params[sensor_name]['sensor_model_coeffs'] = self.get_parameter('%s.sensor_model_coeffs' % sensor_name).get_parameter_value().double_array_value
-            self.sensor_params[sensor_name]['sensor_model_array'] = np.array(self.sensor_params[sensor_name]['sensor_model_coeffs']).reshape(len(self.sensor_params[sensor_name]['obs_labels']),-1)
+            self.sensor_params[sensor_name]['sensor_model_array'] = np.array(self.sensor_params[sensor_name]['sensor_model_coeffs']).reshape(-1,len(self.sensor_params[sensor_name]['obs_labels']))
             self.sensor_params[sensor_name]['sensor_model'] = gtsam.DiscreteConditional([self.sensor_params[sensor_name]['symbol'],len(self.sensor_params[sensor_name]['obs_labels'])],[[self.scene_symbol,len(self.scene_labels)]],pmf_to_spec(self.sensor_params[sensor_name]['sensor_model_array']))
+
+            # self.get_logger().info(f'SENSOR PARAMS: {self.sensor_params[sensor_name]}')
 
             self.subscribers.append(self.create_subscription(CategoricalDistribution,self.get_parameter('%s.topic' % sensor_name).get_parameter_value().string_value, eval("lambda msg: self.scene_update(msg, \"" + sensor_name + "\")",locals()), 10))
 
@@ -81,9 +83,11 @@ class BayesSceneEstNode(Node):
         self.scene_category_pub.publish(scene_category_msg)
 
     def scene_update(self,scene_msg, sensor_name):
-        
+
         # TODO - compute these and store them in sensor params beforehand to reduce unnecessary computation
         obs = gtsam.DiscreteDistribution([self.sensor_params[sensor_name]['symbol'],len(self.sensor_params[sensor_name]['obs_labels'])],scene_msg.probabilities)
+        # likelihood = self.sensor_params[sensor_name]['sensor_model'].likelihood(obs.argmax())
+
         obs_factor = gtsam.DecisionTreeFactor(obs)
         sensor_model_factor = gtsam.DecisionTreeFactor(self.sensor_params[sensor_name]['sensor_model'])
         likelihood = (obs_factor*sensor_model_factor).sum(1)
