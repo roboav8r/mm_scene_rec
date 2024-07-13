@@ -1,12 +1,11 @@
 audio_scene_rec:
   ros__parameters:
-    n_channels: 1
-    # src: 'plughw:4,0'
+    n_channels: 7
     sample_rate: 48000
     downsample_rate: 32000
     frame_size: 48000
     scene_size: 48000
-    scene_index: [0]
+    scene_index: 0
     labels: ['airport', 'bus', 'metro', 'metro_station', 'park', 'public_square', 'shopping_mall', 'street_pedestrian', 'street_traffic', 'tram']
     scene_est_interval: 1.0
     wandb_id: 'fjycgepm'
