@@ -103,7 +103,7 @@ class SceneRecNode(Node):
         self.declare_parameter('downsample_rate', rclpy.Parameter.Type.INTEGER)
         self.declare_parameter('frame_size', rclpy.Parameter.Type.INTEGER)
         self.declare_parameter('scene_size', rclpy.Parameter.Type.INTEGER)
-        self.declare_parameter('scene_index', rclpy.Parameter.Type.INTEGER)
+        self.declare_parameter('scene_index', rclpy.Parameter.Type.INTEGER_ARRAY)
         self.declare_parameter('scene_est_interval', rclpy.Parameter.Type.DOUBLE)
         self.declare_parameter('labels', rclpy.Parameter.Type.STRING_ARRAY)
 
@@ -113,7 +113,7 @@ class SceneRecNode(Node):
         self.downsample_rate = self.get_parameter('downsample_rate').get_parameter_value().integer_value
         self.frame_size = self.get_parameter('frame_size').get_parameter_value().integer_value
         self.scene_size = self.get_parameter('scene_size').get_parameter_value().integer_value
-        self.scene_idx = self.get_parameter('scene_index').get_parameter_value().integer_value
+        self.scene_idx = self.get_parameter('scene_index').get_parameter_value().integer_array_value
         self.scene_est_interval = self.get_parameter('scene_est_interval').get_parameter_value().double_value
         self.audio_scene_labels = self.get_parameter('labels').get_parameter_value().string_array_value
 
@@ -121,7 +121,7 @@ class SceneRecNode(Node):
 
         # Audio data storage
         self.frame = torch.zeros([self.frame_size, self.n_channels],dtype=torch.float16)
-        self.scene_audio = torch.zeros([self.scene_size, 1],dtype=torch.float16)
+        self.scene_audio = torch.zeros([self.scene_size, len(self.scene_idx)],dtype=torch.float16)
         self.scene_audio = self.scene_audio.to(self.device)
 
         # Module configuration

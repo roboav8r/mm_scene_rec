@@ -5,7 +5,7 @@ audio_scene_rec:
     downsample_rate: 32000
     frame_size: 48000
     scene_size: 48000
-    scene_index: 0
+    scene_index: [0]
     labels: ['airport', 'bus', 'metro', 'metro_station', 'park', 'public_square', 'shopping_mall', 'street_pedestrian', 'street_traffic', 'tram']
     scene_est_interval: 1.0
     wandb_id: 'fjycgepm'
