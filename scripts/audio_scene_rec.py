@@ -121,7 +121,7 @@ class SceneRecNode(Node):
 
         # Audio data storage
         self.frame = torch.zeros([self.frame_size, self.n_channels],dtype=torch.float16)
-        self.scene_audio = torch.zeros([self.scene_size, len(self.scene_idx)],dtype=torch.float16)
+        self.scene_audio = torch.zeros([self.scene_size, 1],dtype=torch.float16)
         self.scene_audio = self.scene_audio.to(self.device)
 
         # Module configuration
