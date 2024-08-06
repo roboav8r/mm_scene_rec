@@ -1,0 +1,6 @@
+/**:
+  ros__parameters:
+    callback_period_sec: 1.0
+    scene_labels: ['laboratory','lobby','college-campus','courtyard']
+    scene_descriptions: ['a picture of a laboratory','a picture of a lobby','a picture of a college campus','a picture of a courtyard']
+    clip_model: 'ViT-B/32'

@@ -1,0 +1,33 @@
+audio_scene_rec:
+  ros__parameters:
+    n_channels: 16
+    sample_rate: 44100
+    downsample_rate: 32000
+    frame_size: 44100
+    scene_size: 44100
+    scene_index: [0]
+    labels: ['airport', 'bus', 'metro', 'metro_station', 'park', 'public_square', 'shopping_mall', 'street_pedestrian', 'street_traffic', 'tram']
+    scene_est_interval: 1.0
+
+    # Model path params
+    project_name: DCASE23_Task1
+
+    # Mel pre-processing parameters
+    resample_rate: 32000
+    window_size: 3072
+    hop_size: 500
+    n_fft: 4096
+    n_mels: 256
+    freqm: 48
+    timem: 0
+    fmin: 0
+    fmax: 0
+    fmin_aug_range: 1
+    fmax_aug_range: 1000
+
+    # Model parameters
+    n_classes: 10
+    in_channels: 1
+    base_channels: 32
+    channels_multiplier: 2.3
+    expansion_rate: 3
