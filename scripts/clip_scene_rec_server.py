@@ -9,12 +9,8 @@ import rclpy
 from rclpy.node import Node
 from cv_bridge import CvBridge
 
-# from sensor_msgs.msg import Image
-# from std_msgs.msg import String
-
 from situated_hri_interfaces.srv import SceneVisRec
 from situated_hri_interfaces.msg import CategoricalDistribution
-
 
 class ClipSceneRecServer(Node):
 
@@ -22,23 +18,14 @@ class ClipSceneRecServer(Node):
 
         super().__init__('clip_scene_rec_server')
 
-        # self.declare_parameter('callback_period_sec', rclpy.Parameter.Type.DOUBLE)
         self.declare_parameter('scene_labels', rclpy.Parameter.Type.STRING_ARRAY)
         self.declare_parameter('scene_descriptions', rclpy.Parameter.Type.STRING_ARRAY)
         self.declare_parameter('clip_model', rclpy.Parameter.Type.STRING)
-        # self.callback_period_sec = self.get_parameter('callback_period_sec').get_parameter_value().double_value
         self.scene_labels = self.get_parameter('scene_labels').get_parameter_value().string_array_value
         self.scene_descriptions = self.get_parameter('scene_descriptions').get_parameter_value().string_array_value
         self.clip_model = self.get_parameter('clip_model').get_parameter_value().string_value
 
         self.clip_service = self.create_service(SceneVisRec, 'scene_vis_rec_service', self.scene_rec_callback)
-        # self.image_sub = self.create_subscription(Image, 'clip_scene_image', self.image_callback, 10)
-        # self.scene_pub = self.create_publisher(String, 'clip_scene', 10)
-        # self.scene_category_pub = self.create_publisher(CategoricalDistribution, 'clip_scene_category', 10)
-        # self.timer = self.create_timer(self.callback_period_sec, self.timer_callback)
-
-        # self.image_msg = Image()
-        # self.image_received = False
 
         self.bridge = CvBridge()
 
@@ -66,8 +53,8 @@ class ClipSceneRecServer(Node):
             probs = self.logits_per_image.softmax(dim=-1).cpu().numpy()
 
             # Output
-            response.categories = self.scene_labels
-            response.probabilities = probs[0].tolist()
+            response.scene_class.categories = self.scene_labels
+            response.scene_class.probabilities = probs[0].tolist()
             
             self.get_logger().info("Scene recognition inference time (s): %s" % (time.time() - start_time))
             return response
