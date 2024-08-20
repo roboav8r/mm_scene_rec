@@ -7,12 +7,13 @@ import rclpy
 from rclpy.node import Node
 from cv_bridge import CvBridge
 
+from std_srvs.srv import Empty
+
 from situated_hri_interfaces.msg import CategoricalDistribution
 
 
+
 def pmf_to_spec(pmf):
-
-
 
     spec = ''
     for row_idx in range(pmf.shape[0]):
@@ -38,20 +39,20 @@ class BayesSceneEstNode(Node):
         super().__init__('bayes_scene_est')
     
         # Get scene/estimator parameters
-        self.declare_parameter('callback_period_sec',rclpy.Parameter.Type.DOUBLE)
         self.declare_parameter('scene_labels',rclpy.Parameter.Type.STRING_ARRAY)
         self.declare_parameter('scene_prior',rclpy.Parameter.Type.DOUBLE_ARRAY)
-        self.callback_period_sec = self.get_parameter('callback_period_sec').get_parameter_value().double_value
         self.scene_labels = self.get_parameter('scene_labels').get_parameter_value().string_array_value
         self.scene_probs = self.get_parameter('scene_prior').get_parameter_value().double_array_value
 
         # Initialize scene estimate
-        self.scene_symbol = scene_sym = gtsam.symbol('s',0)
-        self.scene_prob_est = gtsam.DiscreteDistribution([scene_sym,len(self.scene_labels)],self.scene_probs)
+        self.scene_symbol = gtsam.symbol('s',0)
+        self.scene_prob_est = gtsam.DiscreteDistribution([self.scene_symbol,len(self.scene_labels)],self.scene_probs)
 
-        # Setup scene publisher and timer
-        self.scene_category_pub = self.create_publisher(CategoricalDistribution, 'fused_scene_category', 10)
-        self.timer = self.create_timer(self.callback_period_sec, self.publish_fused_scene)
+        # Setup scene publisher
+        self.scene_category_pub = self.create_publisher(CategoricalDistribution, '~/fused_scene_category', 10)
+
+        # Setup services
+        self.reset_srv = self.create_service(Empty, '~/reset', self.reset_callback)
 
         # Get sensor parameters, form sensor param dictionary, setup subs
         self.sensor_params = dict()
@@ -93,6 +94,13 @@ class BayesSceneEstNode(Node):
         likelihood = (obs_factor*sensor_model_factor).sum(1)
 
         self.scene_prob_est = gtsam.DiscreteDistribution(likelihood*self.scene_prob_est)
+
+        self.publish_fused_scene()
+
+    def reset_callback(self, request, response):
+        self.get_logger().info('Resetting...')
+        self.scene_prob_est = gtsam.DiscreteDistribution([self.scene_symbol,len(self.scene_labels)],self.scene_probs)
+        return response
 
 
 def main(args=None):

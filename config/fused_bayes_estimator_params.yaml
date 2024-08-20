@@ -1,0 +1,23 @@
+/bayes_fused_scene_est:
+  ros__parameters:
+
+    scene_labels: ['campus','courtyard','lab','lobby']
+    scene_prior: [.25,.25,.25,.25]
+
+    sensor_names: ['clip','dcase23']
+
+    clip:
+      obs_labels: ['college-campus','courtyard','laboratory','lobby']
+      sensor_model_coeffs: [25008., 5984., 1., 7663.,
+                            41098., 1758., 1., 54.,
+                            1., 1., 25794., 16400.,
+                            1., 1., 1., 41440.]
+      topic: 'clip_scene_category'
+
+    dcase23:
+      obs_labels: ['airport', 'bus', 'metro', 'metro_station','park','public_square','shopping_mall','street_pedestrian','street_traffic','tram']
+      sensor_model_coeffs: [15., 16., 42., 10., 196., 5., 2., 2., 56., 1944.,
+                            3., 288., 11., 11., 796., 2., 1., 2., 11., 1350.,
+                            11., 171., 2110., 41., 81., 1., 1., 1., 64., 26.,
+                            457., 57., 205., 481., 977., 2., 70., 17., 20., 166.]
+      topic: 'audio_scene_category'

@@ -23,6 +23,8 @@ from situated_hri_interfaces.msg import CategoricalDistribution
 from mm_scene_rec.cpjku_dcase23.models.cp_mobile_clean import get_model
 from mm_scene_rec.cpjku_dcase23.models.mel import AugmentMelSTFT
 
+from situated_hri_interfaces.srv import SceneAudioRec
+
 # Helper functions
 def fuse_model(module):
     # fuse layers
@@ -89,13 +91,10 @@ class PLModule(pl.LightningModule):
         x = self.model(x)
         return x
 
-class SceneRecNode(Node):
+class AudioSceneRecServer(Node):
 
     def __init__(self):
-        super().__init__('scene_rec_node')
-        self.subscription = self.create_subscription(AudioDataStamped, 'audio_data', self.audio_data_callback, 10)
-        self.scene_pub = self.create_publisher(String, 'audio_scene', 10)
-        self.scene_category_pub = self.create_publisher(CategoricalDistribution, 'audio_scene_category', 10)
+        super().__init__('audio_scene_rec_server')
         
         # Declare parameters with default values
         self.declare_parameter('n_channels', rclpy.Parameter.Type.INTEGER)
@@ -169,6 +168,9 @@ class SceneRecNode(Node):
         self.resampler = T.Resample(self.sample_rate, self.downsample_rate, dtype=torch.float16)
         self.resampler = self.resampler.to(self.device)
 
+        # ROS Objects
+        self.audio_rec_service = self.create_service(SceneAudioRec, 'scene_audio_rec_service', self.scene_rec_callback)
+
     def init_model(self):
 
         # create pytorch lightening module
@@ -183,11 +185,11 @@ class SceneRecNode(Node):
         self.pl_module.mel.cuda()
 
 
-    def audio_data_callback(self, msg):
+    def scene_rec_callback(self, request, response):
 
         start_time = time.time()
 
-        chunk = torch.frombuffer(msg.audio.data,dtype=torch.float16).view(-1,self.n_channels)
+        chunk = torch.frombuffer(request.scene_audio.audio.data,dtype=torch.float16).view(-1,self.n_channels)
 
         # Roll the frame, and replace oldest contents with new chunk
         self.frame = torch.roll(self.frame, -chunk.size(0), 0)
@@ -216,24 +218,19 @@ class SceneRecNode(Node):
         scene_probs = scene_est.softmax(dim=-1).half().detach().cpu().numpy()
 
         # Output
-        msg = String()
-        msg.data = 'Classes: %s \n Probabilities: %s' % (self.audio_scene_labels, str(scene_probs))
-        self.scene_pub.publish(msg)
-
-        scene_category_msg = CategoricalDistribution()
-        scene_category_msg.categories = self.audio_scene_labels
-        scene_category_msg.probabilities = scene_probs[0].tolist()
-        self.scene_category_pub.publish(scene_category_msg)
-
-        self.get_logger().debug("Inference time (s): %s" % (time.time() - start_time))
+        response.scene_class.categories = self.audio_scene_labels
+        response.scene_class.probabilities = scene_probs[0].tolist()
+        response.inference_time = time.time() - start_time
+        
+        return response
 
 
 def main(args=None):
     rclpy.init(args=args)
-    audio_proc_node = SceneRecNode()
-    rclpy.spin(audio_proc_node)
+    audio_scene_rec_server = AudioSceneRecServer()
+    rclpy.spin(audio_scene_rec_server)
 
-    audio_proc_node.destroy_node()
+    audio_scene_rec_server.destroy_node()
     rclpy.shutdown()
 
 

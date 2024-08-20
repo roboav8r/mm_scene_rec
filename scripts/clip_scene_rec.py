@@ -11,6 +11,8 @@ from cv_bridge import CvBridge
 
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
+from std_srvs.srv import Empty
+
 from situated_hri_interfaces.msg import CategoricalDistribution
 
 
@@ -20,11 +22,11 @@ class ClipSceneRecNode(Node):
 
         super().__init__('clip_scene_rec')
 
-        self.declare_parameter('callback_period_sec', rclpy.Parameter.Type.DOUBLE)
+        self.declare_parameter('num_est_interval_samples', rclpy.Parameter.Type.INTEGER)
         self.declare_parameter('scene_labels', rclpy.Parameter.Type.STRING_ARRAY)
         self.declare_parameter('scene_descriptions', rclpy.Parameter.Type.STRING_ARRAY)
         self.declare_parameter('clip_model', rclpy.Parameter.Type.STRING)
-        self.callback_period_sec = self.get_parameter('callback_period_sec').get_parameter_value().double_value
+        self.num_est_interval_samples = self.get_parameter('num_est_interval_samples').get_parameter_value().integer_value
         self.scene_labels = self.get_parameter('scene_labels').get_parameter_value().string_array_value
         self.scene_descriptions = self.get_parameter('scene_descriptions').get_parameter_value().string_array_value
         self.clip_model = self.get_parameter('clip_model').get_parameter_value().string_value
@@ -32,7 +34,7 @@ class ClipSceneRecNode(Node):
         self.image_sub = self.create_subscription(Image, 'clip_scene_image', self.image_callback, 10)
         self.scene_pub = self.create_publisher(String, 'clip_scene', 10)
         self.scene_category_pub = self.create_publisher(CategoricalDistribution, 'clip_scene_category', 10)
-        self.timer = self.create_timer(self.callback_period_sec, self.timer_callback)
+        self.reset_srv = self.create_service(Empty, '~/reset', self.reset_callback)
 
         self.image_msg = Image()
         self.image_received = False
@@ -45,21 +47,18 @@ class ClipSceneRecNode(Node):
         self.text_tokens = clip.tokenize(self.scene_descriptions).to(self.device)
         self.text_features = self.model.encode_text(self.text_tokens)
 
+        self.msg_count = 0
+
     def image_callback(self,msg):
-        self.image_received = True
 
-        self.image_msg = msg
+        if self.msg_count%self.num_est_interval_samples == 0:
 
-
-    def timer_callback(self):
-        start_time = time.time()
-
-        if self.image_received:
+            start_time = time.time()
 
             with torch.no_grad():
 
                 # Convert to CV image type
-                self.cv_image = self.bridge.imgmsg_to_cv2(self.image_msg)
+                self.cv_image = self.bridge.imgmsg_to_cv2(msg)
 
                 # Compute CLIP image embeddings
                 self.clip_image = self.preprocess(PILImage.fromarray(self.cv_image)).unsqueeze(0).to(self.device)
@@ -80,6 +79,13 @@ class ClipSceneRecNode(Node):
                 self.scene_category_pub.publish(scene_category_msg)
 
                 self.get_logger().debug("Inference time (s): %s" % (time.time() - start_time))
+                
+        self.msg_count+=1
+
+    def reset_callback(self, _, response):
+        self.get_logger().info('Resetting...')
+        self.msg_count = 0
+        return response
 
 def main(args=None):
     rclpy.init(args=args)

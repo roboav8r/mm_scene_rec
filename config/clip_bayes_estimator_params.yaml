@@ -1,0 +1,15 @@
+/bayes_clip_scene_est:
+  ros__parameters:
+
+    scene_labels: ['campus','courtyard','lab','lobby']
+    scene_prior: [.25,.25,.25,.25]
+
+    sensor_names: ['clip']
+
+    clip:
+      obs_labels: ['college-campus','courtyard','laboratory','lobby']
+      sensor_model_coeffs: [25008., 5984., 1., 7663.,
+                            41098., 1758., 1., 54.,
+                            1., 1., 25794., 16400.,
+                            1., 1., 1., 41440.]
+      topic: 'clip_scene_category'

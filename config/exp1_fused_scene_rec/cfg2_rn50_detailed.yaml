@@ -1,0 +1,106 @@
+/**:
+  ros__parameters:
+
+    ### GENERIC PARAMS
+    config_name: 'rn50_detailed'
+    
+    ### AUDIO PARAMS - these should not change across experiments
+
+    n_channels: 16
+    sample_rate: 44100
+    downsample_rate: 32000
+    frame_size: 44100
+    scene_size: 44100
+    scene_index: [0]
+    labels: ['airport', 'bus', 'metro', 'metro_station', 'park', 'public_square', 'shopping_mall', 'street_pedestrian', 'street_traffic', 'tram']
+
+    # Model path params
+    project_name: DCASE23_Task1
+    wandb_id: 'c0a7nzin'
+
+    # Mel pre-processing parameters
+    resample_rate: 32000
+    window_size: 3072
+    hop_size: 500
+    n_fft: 4096
+    n_mels: 256
+    freqm: 48
+    timem: 0
+    fmin: 0
+    fmax: 0
+    fmin_aug_range: 1
+    fmax_aug_range: 1000
+
+    # Model parameters
+    n_classes: 10
+    in_channels: 1
+    base_channels: 32
+    channels_multiplier: 2.3
+    expansion_rate: 3
+
+    ### CLIP SCENE ESTIMATION PARAMS
+
+    num_est_interval_samples: 15 # Number of samples 
+    scene_labels: ['campus','courtyard','lab','lobby']
+    scene_descriptions: ['a picture of a public outdoor area with high social activity','a picture of a private outdoor area with low social activity','a picture of a private indoor area with low social activity','a picture of a public indoor area with high social activity']
+    clip_model: 'RN50'
+
+
+### AUDIO BAYES ESTIMATOR PARAMS
+/bayes_audio_scene_est:
+  ros__parameters:
+
+    scene_labels: ['campus','courtyard','lab','lobby']
+    scene_prior: [.25,.25,.25,.25]
+
+    sensor_names: ['dcase23']
+
+    dcase23:
+      obs_labels: ['airport', 'bus', 'metro', 'metro_station','park','public_square','shopping_mall','street_pedestrian','street_traffic','tram']
+      sensor_model_coeffs: [8., 17., 49., 22., 191., 7., 1., 1., 44., 1948.,
+                            4., 305., 5., 8., 765., 1., 1., 2., 22., 1362.,
+                            22., 156., 2125., 33., 79., 2., 1., 2., 66., 21.,
+                            459., 47., 208., 475., 971., 1., 70., 19., 22., 179.]
+      topic: 'audio_scene_category'
+
+### CLIP BAYES ESTIMATOR PARAMS
+/bayes_clip_scene_est:
+  ros__parameters:
+
+    scene_labels: ['campus','courtyard','lab','lobby']
+    scene_prior: [.25,.25,.25,.25]
+
+    sensor_names: ['clip']
+
+    clip:
+      obs_labels: ['campus','courtyard','lab','lobby']
+      sensor_model_coeffs: [36048., 17., 1., 2590.,
+                            38062., 4320., 1., 528.,
+                            1., 1., 41491., 703.,
+                            1., 1., 41., 41400.]
+      topic: 'clip_scene_category'
+
+### FUSED BAYES ESTIMATOR PARAMS
+/bayes_fused_scene_est:
+  ros__parameters:
+
+    scene_labels: ['campus','courtyard','lab','lobby']
+    scene_prior: [.25,.25,.25,.25]
+
+    sensor_names: ['clip','dcase23']
+
+    clip:
+      obs_labels: ['campus','courtyard','lab','lobby']
+      sensor_model_coeffs: [36048., 17., 1., 2590.,
+                            38062., 4320., 1., 528.,
+                            1., 1., 41491., 703.,
+                            1., 1., 41., 41400.]
+      topic: 'clip_scene_category'
+
+    dcase23:
+      obs_labels: ['airport', 'bus', 'metro', 'metro_station','park','public_square','shopping_mall','street_pedestrian','street_traffic','tram']
+      sensor_model_coeffs: [8., 17., 49., 22., 191., 7., 1., 1., 44., 1948.,
+                            4., 305., 5., 8., 765., 1., 1., 2., 22., 1362.,
+                            22., 156., 2125., 33., 79., 2., 1., 2., 66., 21.,
+                            459., 47., 208., 475., 971., 1., 70., 19., 22., 179.]
+      topic: 'audio_scene_category'
