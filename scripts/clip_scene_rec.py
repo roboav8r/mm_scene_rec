@@ -35,6 +35,7 @@ class ClipSceneRecNode(Node):
         self.scene_pub = self.create_publisher(String, 'clip_scene', 10)
         self.scene_category_pub = self.create_publisher(CategoricalDistribution, 'clip_scene_category', 10)
         self.reset_srv = self.create_service(Empty, '~/reset', self.reset_callback)
+        self.reconf_srv = self.create_service(Empty, '~/reconfigure', self.reconf_callback)
 
         self.image_msg = Image()
         self.image_received = False
@@ -85,6 +86,14 @@ class ClipSceneRecNode(Node):
     def reset_callback(self, _, response):
         self.get_logger().info('Resetting...')
         self.msg_count = 0
+        return response
+    
+    def reconf_callback(self, _, response):
+        self.get_logger().info('Reconfiguring')
+        self.num_est_interval_samples = self.get_parameter('num_est_interval_samples').get_parameter_value().integer_value
+        self.scene_labels = self.get_parameter('scene_labels').get_parameter_value().string_array_value
+        self.scene_descriptions = self.get_parameter('scene_descriptions').get_parameter_value().string_array_value
+        self.clip_model = self.get_parameter('clip_model').get_parameter_value().string_value
         return response
 
 def main(args=None):

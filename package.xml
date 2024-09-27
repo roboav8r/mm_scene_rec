@@ -14,7 +14,7 @@
   <depend>rclpy</depend>
 
   <depend>usb_cam</depend>
-  <depend>depthai_ros</depend>
+  <depend>depthai-ros</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
