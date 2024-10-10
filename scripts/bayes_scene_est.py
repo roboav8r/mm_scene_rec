@@ -53,6 +53,7 @@ class BayesSceneEstNode(Node):
 
         # Setup services
         self.reset_srv = self.create_service(Empty, '~/reset', self.reset_callback)
+        self.reconf_srv = self.create_service(Empty, '~/reconfigure', self.reconf_callback)
 
         # Get sensor parameters, form sensor param dictionary, setup subs
         self.sensor_params = dict()
@@ -100,6 +101,16 @@ class BayesSceneEstNode(Node):
     def reset_callback(self, request, response):
         self.get_logger().info('Resetting...')
         self.scene_prob_est = gtsam.DiscreteDistribution([self.scene_symbol,len(self.scene_labels)],self.scene_probs)
+        return response
+
+    def reconf_callback(self, request, response):
+        self.get_logger().info('Reconfiguring...')
+
+        for sensor_idx, sensor_name in enumerate(self.sensor_names):
+            self.sensor_params[sensor_name]['sensor_model_coeffs'] = self.get_parameter('%s.sensor_model_coeffs' % sensor_name).get_parameter_value().double_array_value
+            self.sensor_params[sensor_name]['sensor_model_array'] = np.array(self.sensor_params[sensor_name]['sensor_model_coeffs']).reshape(-1,len(self.sensor_params[sensor_name]['obs_labels']))
+            self.sensor_params[sensor_name]['sensor_model'] = gtsam.DiscreteConditional([self.sensor_params[sensor_name]['symbol'],len(self.sensor_params[sensor_name]['obs_labels'])],[[self.scene_symbol,len(self.scene_labels)]],pmf_to_spec(self.sensor_params[sensor_name]['sensor_model_array']))
+
         return response
 
 
