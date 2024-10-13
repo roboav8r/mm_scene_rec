@@ -23,10 +23,12 @@ class ClipSceneRecNode(Node):
         super().__init__('clip_scene_rec')
 
         self.declare_parameter('num_est_interval_samples', rclpy.Parameter.Type.INTEGER)
+        self.declare_parameter('update_interval', rclpy.Parameter.Type.DOUBLE)
         self.declare_parameter('scene_labels', rclpy.Parameter.Type.STRING_ARRAY)
         self.declare_parameter('scene_descriptions', rclpy.Parameter.Type.STRING_ARRAY)
         self.declare_parameter('clip_model', rclpy.Parameter.Type.STRING)
         self.num_est_interval_samples = self.get_parameter('num_est_interval_samples').get_parameter_value().integer_value
+        self.update_interval = self.get_parameter('update_interval').get_parameter_value().double_value
         self.scene_labels = self.get_parameter('scene_labels').get_parameter_value().string_array_value
         self.scene_descriptions = self.get_parameter('scene_descriptions').get_parameter_value().string_array_value
         self.clip_model = self.get_parameter('clip_model').get_parameter_value().string_value
@@ -49,12 +51,27 @@ class ClipSceneRecNode(Node):
         self.text_features = self.model.encode_text(self.text_tokens)
 
         self.msg_count = 0
+        self.last_scene_update = None
 
     def image_callback(self,msg):
 
-        if self.msg_count%self.num_est_interval_samples == 0:
+        # if self.msg_count%self.num_est_interval_samples == 0:
+        now = self.get_clock().now()
 
-            start_time = time.time()
+        update_scene = False
+        scene_not_initialized = (self.last_scene_update is None)
+
+        if scene_not_initialized:
+            update_scene = True
+        else:
+            scene_estimate_stale = (now - self.last_scene_update).nanoseconds/1e9 > self.update_interval
+
+            if scene_estimate_stale:
+                update_scene = True
+
+        if update_scene:
+
+            # start_time = time.time()
 
             with torch.no_grad():
 
@@ -78,19 +95,20 @@ class ClipSceneRecNode(Node):
                 scene_category_msg.categories = self.scene_labels
                 scene_category_msg.probabilities = probs[0].tolist()
                 self.scene_category_pub.publish(scene_category_msg)
-
-                self.get_logger().debug("Inference time (s): %s" % (time.time() - start_time))
                 
-        self.msg_count+=1
+            self.msg_count+=1
+            self.last_scene_update = now
 
     def reset_callback(self, _, response):
         self.get_logger().info('Resetting...')
         self.msg_count = 0
+        self.last_scene_update = None
         return response
     
     def reconf_callback(self, _, response):
         self.get_logger().info('Reconfiguring')
         self.num_est_interval_samples = self.get_parameter('num_est_interval_samples').get_parameter_value().integer_value
+        self.update_interval = self.get_parameter('update_interval').get_parameter_value().double_value
         self.scene_labels = self.get_parameter('scene_labels').get_parameter_value().string_array_value
         self.scene_descriptions = self.get_parameter('scene_descriptions').get_parameter_value().string_array_value
         self.clip_model = self.get_parameter('clip_model').get_parameter_value().string_value

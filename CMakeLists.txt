@@ -22,6 +22,7 @@ install(PROGRAMS
   scripts/audio_scene_rec.py
   scripts/audio_scene_rec_server.py
   scripts/bayes_scene_est.py
+  scripts/multimodal_bayes_scene_est.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
