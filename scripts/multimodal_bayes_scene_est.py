@@ -44,9 +44,13 @@ class BayesSceneEstNode(Node):
         self.declare_parameter('scene_labels',rclpy.Parameter.Type.STRING_ARRAY)
         self.declare_parameter('scene_prior',rclpy.Parameter.Type.DOUBLE_ARRAY)
         self.declare_parameter('loop_time_sec',rclpy.Parameter.Type.DOUBLE)
+        self.declare_parameter('min_prob',rclpy.Parameter.Type.DOUBLE)
+        self.declare_parameter('max_prob',rclpy.Parameter.Type.DOUBLE)
         self.scene_labels = self.get_parameter('scene_labels').get_parameter_value().string_array_value
         self.scene_probs = self.get_parameter('scene_prior').get_parameter_value().double_array_value
         self.loop_time_sec = self.get_parameter('loop_time_sec').get_parameter_value().double_value
+        self.min_prob = self.get_parameter('min_prob').get_parameter_value().double_value
+        self.max_prob = self.get_parameter('max_prob').get_parameter_value().double_value
 
         # Initialize scene estimate
         self.scene_symbol = gtsam.symbol('s',0)
@@ -92,6 +96,23 @@ class BayesSceneEstNode(Node):
             # self.get_logger().info(f'SENSOR PARAMS: {self.sensor_params[sensor_name]}')
 
             self.subscribers.append(self.create_subscription(CategoricalDistribution,self.get_parameter('%s.topic' % sensor_name).get_parameter_value().string_value, eval("lambda msg: self.save_msg(msg, \"" + sensor_name + "\")",locals()), 10, callback_group=self.sub_srv_cb_group))
+
+    def normalize_probs(self):
+        # self.scene_prob_est = gtsam.DiscreteDistribution(likelihood*self.scene_prob_est)
+
+        pmf = self.scene_prob_est.pmf()
+        self.get_logger().info(f"Raw PMF: {pmf}")
+
+        for ii, prob in enumerate(pmf):
+            if prob > self.max_prob:
+                pmf[ii] = self.max_prob
+            elif prob < self.min_prob:
+                pmf[ii] = self.min_prob
+
+
+        self.scene_prob_est = gtsam.DiscreteDistribution([self.scene_symbol,len(self.scene_labels)],pmf)
+
+        self.get_logger().info(f"Normalized PMF: {self.scene_prob_est.pmf()}")
 
     def publish_fused_scene(self):
         scene_category_msg = CategoricalDistribution()
@@ -139,6 +160,8 @@ class BayesSceneEstNode(Node):
         likelihood = (obs_factor*sensor_model_factor).sum(1)
 
         self.scene_prob_est = gtsam.DiscreteDistribution(likelihood*self.scene_prob_est)
+
+        self.normalize_probs()
 
         self.publish_fused_scene()
 
