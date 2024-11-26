@@ -93,15 +93,11 @@ class BayesSceneEstNode(Node):
             self.sensor_params[sensor_name]['sensor_model_array'] = np.array(self.sensor_params[sensor_name]['sensor_model_coeffs']).reshape(-1,len(self.sensor_params[sensor_name]['obs_labels']))
             self.sensor_params[sensor_name]['sensor_model'] = gtsam.DiscreteConditional([self.sensor_params[sensor_name]['symbol'],len(self.sensor_params[sensor_name]['obs_labels'])],[[self.scene_symbol,len(self.scene_labels)]],pmf_to_spec(self.sensor_params[sensor_name]['sensor_model_array']))
 
-            # self.get_logger().info(f'SENSOR PARAMS: {self.sensor_params[sensor_name]}')
-
             self.subscribers.append(self.create_subscription(CategoricalDistribution,self.get_parameter('%s.topic' % sensor_name).get_parameter_value().string_value, eval("lambda msg: self.save_msg(msg, \"" + sensor_name + "\")",locals()), 10, callback_group=self.sub_srv_cb_group))
 
     def normalize_probs(self):
-        # self.scene_prob_est = gtsam.DiscreteDistribution(likelihood*self.scene_prob_est)
 
         pmf = self.scene_prob_est.pmf()
-        self.get_logger().info(f"Raw PMF: {pmf}")
 
         for ii, prob in enumerate(pmf):
             if prob > self.max_prob:
@@ -109,10 +105,7 @@ class BayesSceneEstNode(Node):
             elif prob < self.min_prob:
                 pmf[ii] = self.min_prob
 
-
         self.scene_prob_est = gtsam.DiscreteDistribution([self.scene_symbol,len(self.scene_labels)],pmf)
-
-        self.get_logger().info(f"Normalized PMF: {self.scene_prob_est.pmf()}")
 
     def publish_fused_scene(self):
         scene_category_msg = CategoricalDistribution()
