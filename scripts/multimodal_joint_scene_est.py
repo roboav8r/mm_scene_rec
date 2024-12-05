@@ -102,7 +102,7 @@ class JointSceneEstNode(Node):
         # self.scene_prob_est = gtsam.DiscreteDistribution(likelihood*self.scene_prob_est)
 
         pmf = self.scene_prob_est.pmf()
-        self.get_logger().info(f"Raw PMF: {pmf}")
+        # self.get_logger().info(f"Raw PMF: {pmf}")
 
         for ii, prob in enumerate(pmf):
             if prob > self.max_prob:
@@ -112,7 +112,7 @@ class JointSceneEstNode(Node):
 
         self.scene_prob_est = gtsam.DiscreteDistribution([self.scene_symbol,len(self.scene_labels)],pmf)
 
-        self.get_logger().info(f"Normalized PMF: {self.scene_prob_est.pmf()}")
+        # self.get_logger().info(f"Normalized PMF: {self.scene_prob_est.pmf()}")
 
     def publish_fused_scene(self):
         scene_category_msg = CategoricalDistribution()
@@ -127,14 +127,14 @@ class JointSceneEstNode(Node):
         self.last_sensor_msg[sensor_name] = msg
         self.msg_is_new[sensor_idx] = True
 
-        self.get_logger().info(f"Got message from {sensor_name}, msg_is_new: {self.msg_is_new}")
+        # self.get_logger().info(f"Got message from {sensor_name}, msg_is_new: {self.msg_is_new}")
 
     def update_callback(self):
 
 
         # If all sensors have a new observation
         if all(self.msg_is_new):
-            self.get_logger().info(f"All new messages")
+            # self.get_logger().info(f"All new messages")
 
             # Compute the joint scene estimate with likelihood factors from each sensor
             temp_factor = self.scene_prob_est
@@ -149,15 +149,15 @@ class JointSceneEstNode(Node):
 
                 temp_factor = likelihood*temp_factor
 
-                self.get_logger().info(f"temp_factor after {sensor} update: {temp_factor}")
+                # self.get_logger().info(f"temp_factor after {sensor} update: {temp_factor}")
 
             self.scene_prob_est = gtsam.DiscreteDistribution(temp_factor)
-            self.get_logger().info(f"Scene prob after all updates: {self.scene_prob_est}")
+            # self.get_logger().info(f"Scene prob after all updates: {self.scene_prob_est}")
         
             # Normalize
             self.normalize_probs()
 
-            self.get_logger().info(f"Scene prob after normalization: {self.scene_prob_est}")
+            # self.get_logger().info(f"Scene prob after normalization: {self.scene_prob_est}")
 
             # Publish
             self.publish_fused_scene()
