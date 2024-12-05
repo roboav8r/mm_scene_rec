@@ -22,12 +22,10 @@ class ClipSceneRecNode(Node):
 
         super().__init__('clip_scene_rec')
 
-        self.declare_parameter('num_est_interval_samples', rclpy.Parameter.Type.INTEGER)
         self.declare_parameter('update_interval', rclpy.Parameter.Type.DOUBLE)
         self.declare_parameter('scene_labels', rclpy.Parameter.Type.STRING_ARRAY)
         self.declare_parameter('scene_descriptions', rclpy.Parameter.Type.STRING_ARRAY)
         self.declare_parameter('clip_model', rclpy.Parameter.Type.STRING)
-        self.num_est_interval_samples = self.get_parameter('num_est_interval_samples').get_parameter_value().integer_value
         self.update_interval = self.get_parameter('update_interval').get_parameter_value().double_value
         self.scene_labels = self.get_parameter('scene_labels').get_parameter_value().string_array_value
         self.scene_descriptions = self.get_parameter('scene_descriptions').get_parameter_value().string_array_value
@@ -50,12 +48,10 @@ class ClipSceneRecNode(Node):
         self.text_tokens = clip.tokenize(self.scene_descriptions).to(self.device)
         self.text_features = self.model.encode_text(self.text_tokens)
 
-        self.msg_count = 0
         self.last_scene_update = None
 
     def image_callback(self,msg):
 
-        # if self.msg_count%self.num_est_interval_samples == 0:
         now = self.get_clock().now()
 
         update_scene = False
@@ -96,18 +92,15 @@ class ClipSceneRecNode(Node):
                 scene_category_msg.probabilities = probs[0].tolist()
                 self.scene_category_pub.publish(scene_category_msg)
                 
-            self.msg_count+=1
             self.last_scene_update = now
 
     def reset_callback(self, _, response):
         self.get_logger().info('Resetting...')
-        self.msg_count = 0
         self.last_scene_update = None
         return response
     
     def reconf_callback(self, _, response):
         self.get_logger().info('Reconfiguring')
-        self.num_est_interval_samples = self.get_parameter('num_est_interval_samples').get_parameter_value().integer_value
         self.update_interval = self.get_parameter('update_interval').get_parameter_value().double_value
         self.scene_labels = self.get_parameter('scene_labels').get_parameter_value().string_array_value
         self.scene_descriptions = self.get_parameter('scene_descriptions').get_parameter_value().string_array_value
